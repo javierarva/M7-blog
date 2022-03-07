@@ -3,18 +3,34 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Post;
 use Facade\FlareClient\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Policies\PostPolicy;
 
 class PostController extends Controller {
+
+    public function __construct()
+    {
+        $this->authorizeResource(Post::class, 'post');
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
-        //
+    public function index(Post $post) {
+
+        $user = Auth::user();
+
+        if($user = Auth::user()) {
+            $posts = Post::where('user_id', $user->name);
+        } else {
+            $posts = Post::all();
+        }
+
+        return view('posts.index', compact('posts'));
     }
 
     /**
@@ -23,13 +39,7 @@ class PostController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        $user = Auth::user()->get();
-
-        if ($user->can('create', Post::class)) {
-            Response::allow();
-        } else {
-            Response::deny('No se puede');
-        }
+        return view('posts.create');
     }
 
     /**
@@ -39,7 +49,16 @@ class PostController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        //
+        $validatedData = $request->validate([
+            'title' => 'string|unique:posts|max:90',
+            'contents' => 'string'
+        ]);
+
+        $validatedData['user_id'] = Auth::user()->id;
+        $validatedData['category_id'] = '1';
+
+        Post::create($validatedData);
+        return redirect('posts');
     }
 
     /**
@@ -69,8 +88,14 @@ class PostController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id) {
-        //
+    public function update(Request $request, Post $post) {
+        $validatedData = $request->validate([
+            'title' => 'string|unique:posts|max:90',
+            'contents' => 'string'
+        ]);
+
+        $post->update($validatedData);
+        return back();
     }
 
     /**

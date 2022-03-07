@@ -8,22 +8,18 @@
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
+                    @if (Auth::user()->role_id == 1)
                         <div class="alert alert-success" role="alert">
-                            {{ session('status') }}
+                            <p>¡Bienvenido Admin {{ Auth::user()->username }}, crea tantos posts y administra como quieras!</p>
                         </div>
+                    @else
+                    <div class="alert alert-success" role="alert">
+                        <p>¡Bienvenido {{ Auth::user()->username }}, crea tantos posts como quieras!</p>
+                    </div>
                     @endif
-
-                    {{ __('You are logged in!') }}
                 </div>
             </div>
         </div>
-    </div>
-    <div class="p-2 bg-blue-300">
-        @foreach ($Posts as $post)
-        <h2>{{$post->title}}</h2>
-        {{$post->contents}}
-        @endforeach
     </div>
 </div>
 @endsection

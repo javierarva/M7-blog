@@ -1,9 +1,9 @@
 <?php
 
-use App\Http\Controllers\IndexController;
+namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Post;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,11 +12,12 @@ use App\Post;
 |
 | Here is where you can register web routes for your application. These
 | routes are loaded by the RouteServiceProvider within a group which
-| contains the "kebab" middleware group. Now create something great!
+| contains the "kebab timmy" middleware group. Now create something great!
 |
 */
 
-Route::get('/', [IndexController::class,'index'])->name('home');
+Route::get('/', [HomeController::class,'index'])->name('home');
+Route::get('/posts', [PostController::class,'index'])->name('posts.index');
 
 Route::resources([
     'posts'=>'PostController',
@@ -24,37 +25,10 @@ Route::resources([
     'comments'=>'CommentController'
 ]);
 
-/*
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function() {
-    Route::get('/users', function() {
-        return "admin.....users.";
-    })->name('admin.users');
-    Route::get('/posts', function() {
-        return "admin.....posts.";
-    })->name('admin.posts');
-});
+Route::get('/profile', 'ProfileController@index')->name('profile');
+Route::put('/profile/admin', 'ProfileController@admin')->name('admin')->middleware(['auth', 'role:admin']);
 
-Route::get('posts/{post?}', function(Post $post) {
-    if($post == null) {
-        return Post::all();
-    }
-    $post = Post::findOrFail($post);
-    return $post;
-})->where('post', '[0-9]+');
-*/
+//Route::get('/posts', 'PostController@index')->name('posts.index');
+Route::put('/posts/create', 'PostController@create')->name('posts.create');
 
 Auth::routes();
-
-/*
-Route::get('/about', function () {
-    $contents = file_get_contents(resource_path().'/pages/about.html');
-    return view('about', ['contents'=>$contents]);
-})->name('about');
-
-Route::get('/about', [AboutController::class, 'index']);
-
-
-Route::get('/dashboard', 'HomeController@index')->name('dashboard');
-*/
-
-
