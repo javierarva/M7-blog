@@ -44,7 +44,7 @@ class CommentController extends Controller
         $comment->post_id = (int)$request->get('postId');
         $comment->save();
 
-        return view('posts', ['comments' => $comment]);
+        return back();
     }
 
     /**

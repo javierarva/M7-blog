@@ -17,12 +17,12 @@
                         <div class="card">
                             <h3>{{ $post->title }}</h3>
                             <p>{{ $post->contents }}</p>
-                            {
-                            @foreach ($post->tags as $tag)
-                                <div class="d-flex">
-                                    <span style="border: 2px">{{ $tag->tag }}</span>
-                                <div>
-                            @endforeach
+
+                            <div class="d-flex" style="gap: 10px">
+                                @foreach ($post->tags as $tag)
+                                    <h4><span class="badge badge-primary">{{ $tag->tag }}</span></h4>
+                                @endforeach
+                            </div>
                         </div>
                         <br>
                     @endforeach
