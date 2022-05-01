@@ -4,51 +4,54 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card-header">{{ __('Admin') }}</div>
+            <div class="card-header">{{ __('Administrar Posts') }}</div>
             <div class="card">
-                <h2>Administrar Posts</h2>
-                <tbody>
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Descripción</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
                     @foreach ($posts as $post)
                         <tr>
+                            <td>{{$post->id}}</td>
                             <td>{{$post->title}}</td>
                             <td>{{$post->contents}}</td>
-                            <td width="10px">
-                                <a class="btn btn-primary btn-sm" href="{{route('admin.posts.edit', $post)}}">Editar Post</a>
-                            </td>
-                            <td width="10px">
-                                <form action="{{route('admin.posts.destroy', $post)}}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button class="btn btn-danger btn-sm" type="submit">Eliminar Post</button>
-                                </form>
-                            </td>
+                            <td><a href="{{ route('posts.edit', $post) }}"><button class="btn btn-primary">EDITAR</button></a></td>
+                            <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <td><input type="submit" value="ELIMINAR" class="btn btn-danger"></td>
+                            </form>
                         </tr>
                     @endforeach
-                </tbody>
+                </table>
             </div>
+            <br><br>
+            <div class="card-header">{{ __('Administrar Usuarios') }}</div>
             <div class="card">
-                <h2>Administrar Usuarios</h2>
-                <tbody>
+                <table class="table">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre</th>
+                        <th>Email</th>
+                        <th>Editar</th>
+                        <th>Eliminar</th>
+                    </tr>
                     @foreach ($users as $user)
                         <tr>
+                            <td>{{$user->id}}</td>
                             <td>{{$user->username}}</td>
-                            <td>{{$user->role_id}}</td>
                             <td>{{$user->email}}</td>
-                            <td width="10px">
-                                <a class="btn btn-primary btn-sm" href="{{route('admin.users.edit', $post)}}">Editar Post</a>
-                            </td>
-                            <td width="10px">
-                                <form action="{{route('admin.users.destroy', $post)}}" method="POST">
-                                    @csrf
-                                    @method('DELETE')
-
-                                    <button class="btn btn-danger btn-sm" type="submit">Eliminar Post</button>
-                                </form>
-                            </td>
+                            <td><a href="{{ route('users.edit', $user) }}"><button class="btn btn-primary">Editar</button></a></td>
+                            <form action="{{ route('users.destroy', $user) }}" method="POST">
+                                @csrf @method('DELETE')
+                                <td><input type="submit" value="ELIMINAR" class="btn btn-danger"></td>
+                            </form>
                         </tr>
                     @endforeach
-                </tbody>
+                </table>
             </div>
         </div>
     </div>

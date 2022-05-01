@@ -50,10 +50,19 @@ class User extends Authenticatable {
         return $this->hasMany(Comment::class);
     }
 
+    public function isAdmin(User $user)
+    {
+        if($user->role_id == 1) {
+            return true;
+        }
+        return false;
+    }
+
     public function hasRole($role) {
         if($this->role()->where('role', $role)->first()) {
             return true;
         }
         return false;
     }
+
 }

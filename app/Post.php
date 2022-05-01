@@ -7,14 +7,18 @@ use App\User;
 use App\Tag;
 
 class Post extends Model {
-    
+
     protected $fillable = ['title', 'contents', 'user_id'];
 
     public function user() {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function tags() {
-        return $this->hasMany(Tag::class);
+        return $this->belongsToMany(Tag::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
     }
 }

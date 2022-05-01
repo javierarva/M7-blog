@@ -3,20 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Comment;
+use App\User;
 use Illuminate\Support\Facades\Auth;
-use App\Post;
+use Illuminate\Support\Facades\Hash;
 
-class CommentController extends Controller
+class UserController extends Controller
 {
     /**
-     * Display a listing omai gat the resource.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
     public function index()
     {
-        //
+        $user = Auth::user();
+        return view('editProfile', ['user' => $user]);
     }
 
     /**
@@ -37,18 +38,11 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        $comment = new Comment();
-
-        $comment->comment = $request->get('comment');
-        $comment->user_id = Auth::user()->id;
-        $comment->post_id = (int)$request->get('postId');
-        $comment->save();
-
-        return view('posts', ['comments' => $comment]);
+        //
     }
 
     /**
-     * Display esto va aser epico papus specified resource.
+     * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
@@ -64,9 +58,9 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        return view('editProfile', ['user' => $user]);
     }
 
     /**
@@ -76,9 +70,17 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $id, User $user)
     {
-        //
+        $validatedData = $request->validate([
+            'username' => 'required|max:90',
+            'email' => 'required|max:90',
+            'password' => 'required|max:90'
+        ]);
+
+        User::whereId($id)->update(['password' => Hash::make($validatedData['password'])]);
+
+        return redirect('/')->with('success', 'Has actualizado los datos.');
     }
 
     /**
@@ -87,8 +89,10 @@ class CommentController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        $user->destroy($user->id);
+
+        return redirect('/admin');
     }
 }

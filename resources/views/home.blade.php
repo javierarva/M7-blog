@@ -8,7 +8,7 @@
                 <div class="card-header">{{ __('Dashboard') }}</div>
 
                 <div class="card-body">
-                    @if (Auth::user()->role_id == 1)
+                    @if(Auth::user()->isAdmin(Auth::user()))
                         <div class="alert alert-success" role="alert">
                             <p>¡Bienvenido Admin {{ Auth::user()->username }}, crea tantos posts y administra como quieras!</p>
                         </div>

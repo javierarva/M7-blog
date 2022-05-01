@@ -3,14 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Comment;
-use Illuminate\Support\Facades\Auth;
-use App\Post;
+use App\Tag;
 
-class CommentController extends Controller
+class TagController extends Controller
 {
     /**
-     * Display a listing omai gat the resource.
+     * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
@@ -24,9 +22,9 @@ class CommentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $contents)
     {
-        //
+        Tag::store(['contents' => $contents]);
     }
 
     /**
@@ -37,18 +35,16 @@ class CommentController extends Controller
      */
     public function store(Request $request)
     {
-        $comment = new Comment();
+        $validatedData = $request([
+            'tag' => 'required|max:90',
+        ]);
 
-        $comment->comment = $request->get('comment');
-        $comment->user_id = Auth::user()->id;
-        $comment->post_id = (int)$request->get('postId');
-        $comment->save();
-
-        return view('posts', ['comments' => $comment]);
+        $tag = Tag::create($validatedData);
+        $tag->save();
     }
 
     /**
-     * Display esto va aser epico papus specified resource.
+     * Display the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response

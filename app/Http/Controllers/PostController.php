@@ -7,12 +7,14 @@ use App\Post;
 use Facade\FlareClient\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use App\Policies\PostPolicy;
+use App\Tag;
 
 class PostController extends Controller {
 
     public function __construct()
     {
         $this->authorizeResource(Post::class, 'post');
+        $this->middleware('auth');
     }
 
     /**
@@ -20,17 +22,17 @@ class PostController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Post $post) {
+    public function index() {
 
         $user = Auth::user();
 
         if($user = Auth::user()) {
-            $posts = Post::where('user_id', $user->name);
+            $posts = Post::where('user_id', $user->id)->get();
         } else {
             $posts = Post::all();
         }
 
-        return view('posts.index', compact('posts'));
+        return view('posts', ['posts' => $posts]);
     }
 
     /**
@@ -39,7 +41,10 @@ class PostController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        return view('posts.create');
+
+        $user = Auth::user();
+
+        return view('postsCreate', ['user' => $user]);
     }
 
     /**
@@ -49,16 +54,25 @@ class PostController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
+
+        $tags = explode(',', $request->get('tag'));
+
         $validatedData = $request->validate([
-            'title' => 'string|unique:posts|max:90',
-            'contents' => 'string'
+            'title' => 'required|max:90',
+            'contents' => 'required|max:255'
         ]);
 
         $validatedData['user_id'] = Auth::user()->id;
-        $validatedData['category_id'] = '1';
 
-        Post::create($validatedData);
-        return redirect('posts');
+        $createdPost = Post::create($validatedData);
+
+        foreach($tags as $tag) {
+            $createdTag = Tag::create(['tag' => $tag]);
+
+            $createdPost->tags()->attach($createdTag);
+        }
+
+        return redirect('/posts')->with('success', 'Has subido un post.');
     }
 
     /**
@@ -67,8 +81,8 @@ class PostController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id) {
-        //
+    public function show(Post $post) {
+
     }
 
     /**
@@ -77,8 +91,9 @@ class PostController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id) {
-        //
+    public function edit(Post $post) {
+        $tags = $post->tags;
+        return view('postsEdit', ['post' => $post, 'tags' => $tags]);
     }
 
     /**
@@ -90,12 +105,12 @@ class PostController extends Controller {
      */
     public function update(Request $request, Post $post) {
         $validatedData = $request->validate([
-            'title' => 'string|unique:posts|max:90',
-            'contents' => 'string'
+            'title' => 'required|max:90',
+            'contents' => 'required|max:255'
         ]);
 
         $post->update($validatedData);
-        return back();
+        return redirect('/posts');
     }
 
     /**
@@ -104,7 +119,8 @@ class PostController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) {
-        //
+    public function destroy(Post $post) {
+        $post->destroy($post->id);
+        return back();
     }
 }
